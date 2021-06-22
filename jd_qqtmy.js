@@ -1,30 +1,21 @@
-
 /*
 
-
-
- #柠檬邀请有礼  
- #自定义邀请码环境变量
-export yqm="你的邀请码"
-#柠檬邀请有礼
 [task_local]
-0 10 * * * http://nm66.top/jd_yqyl.js, tag=柠檬邀请有礼, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
+#柠檬618惊奇探秘夜 一次性任务活动 请悉知
+0 6 * * * http://nm66.top/jd_qqtmy.js, tag=柠檬618惊奇探秘夜, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
 */
-const $ = new Env('柠檬邀请有礼');
+
+
+const $ = new Env('柠檬618惊奇探秘夜');
 const notify = $.isNode() ? require('./sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [], cookie = '', message;
-let yqm = '';
-let zdtx = false //设置为true自动抢提现100
-if (process.env.yqm) {
-  yqm = process.env.yqm;
-}
-if (process.env.zdtx) {
-  zdtx = process.env.zdtx;
-}
+let allMessage = '';
+
+
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
@@ -45,6 +36,7 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
     if (cookiesArr[i]) {
       cookie = cookiesArr[i];
       $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
+      $.pin = cookie.match(/pt_pin=(.+?);/)[1]
       $.index = i + 1;
       $.isLogin = true;
       $.nickName = '';
@@ -59,19 +51,34 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
         }
         continue
       }
-      
-      
-      await helpme()
-     if(zdtx == true){
-     for (let i = 0; i < 20; i++) {
-      await $.wait(1000)
-      await tx()
-     }
-     }
-      
+            
+
+for (let i = 0; i < 3; i++) {                 
+await info($.pin)
+if ($.info.status === 0 ) {
+let userid = $.info.user_id
+await task(userid,1)
+await task(userid,2)
+await task(userid,3)
+await task(userid,4)
+await task(userid,5)
+if ($.dotask.status === 0){
+    $.log("今日任务已完成")
+}
+await tip(userid)
+if ($.tiptask.status === 0){
+$.log($.tiptask.prize_info.desc)
+allMessage += `京东账号${$.index}-${$.nickName || $.UserName}\n获得：${$.tiptask.prize_info.desc}${$.index !== cookiesArr.length ? '\n\n' : '\n\n'}`;    
+}
+                }
+}
+
 
     }
   }
+if ($.isNode() && allMessage) {
+        await notify.sendNotify(`${$.name}`, `${allMessage}` )
+    }
 })()
   .catch((e) => {
     $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -79,34 +86,33 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
   .finally(() => {
     $.done();
   })
-function helpme() {
+
+
+
+
+
+
+
+function info(pin) {
     return new Promise(async (resolve) => {
 
                 let options = {
-    url: `https://api.m.jd.com/?t=1623066557140`,
-//dS%2Bp85VyjydPuAOOnFP%2Faw%3D%3D
-    body: `functionId=InviteFriendChangeAssertsService&body={"method":"attendInviteActivity","data":{"inviterPin":"${yqm}","channel":1,"token":"","frontendInitStatus":""}}&referer=-1&eid=eidIc2ff812158s1ARLLPvIBQjyII7trmiE3BQESzLTXqSC9s3TX28oQv3zQuaY%2B15FedjhWtgYfTsUSkl9FEDNBP8LQRrRx5GwEA93H4jSPYNJ1OvNs&aid=&client=ios&clientVersion=14.3&networkType=wifi&fp=-1&uuid=75aeceef3046d8ce11d354ff89af9517a2e4aa18&osVersion=14.3&d_brand=iPhone&d_model=iPhone9,2&agent=-1&pageClickKey=-1&screen=414*736&platform=3&lang=zh_CN&appid=market-task-h5&_t=1623066557140`,
+    url: `https://request.fenquar.com/mishi/shop.php?type=login&uid=${pin}`,
+
 headers: {
-"Origin": "https://618redpacket.jd.com",
-"Host": "api.m.jd.com",
-"User-Agent": "jdltapp;iPhone;3.3.6;14.3;75aeceef3046d8ce11d354ff89af9517a2e4aa18;network/wifi;hasUPPay/0;pushNoticeIsOpen/0;lang/zh_CN;model/iPhone9,2;addressid/4585826605;hasOCPay/0;appBuild/1060;supportBestPay/0;pv/53.31;apprpd/;ref/https://invite-reward.jd.com/?lng=106.286950&lat=29.969353&sid=547255867e847394aedfb6d68c3e50fw&un_area=4_48201_54794_0#/invitee?inviterId=dS%2Bp85VyjydPuAOOnFP%2Faw%3D%3D;psq/0;ads/;psn/75aeceef3046d8ce11d354ff89af9517a2e4aa18|89;jdv/0|kong|t_1001003207_1762319_6901310|jingfen|30578707801140d09fcd54e5cd83bbf7|1621510932517|1621511027;adk/;app_device/IOS;pap/JA2020_3112531|3.3.6|IOS 14.3;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1",
+"Origin": "https://h5.m.jd.com/",
+"Host": "request.fenquar.com",
+      "User-Agent": "jdapp;iPhone;9.5.2;14.3;6898c30638c55142969304c8e2167997fa59eb53;network/wifi;ADID/F108E1B6-8E30-477C-BE54-87CF23435488;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone9,2;addressid/4585826605;supportBestPay/0;appBuild/167650;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1",
       "Cookie": cookie,
       }
                 }
       
-        $.post(options, async (err, resp, data) => {
+        $.get(options, async (err, resp, data) => {
             try {
 
-                    data = JSON.parse(data);
+                  $.info = JSON.parse(data);
 
-                    //console.log(data)
-                    
-                    if(data.data.inviteStatus == 1){
-                      console.log(data.data.inviteStatus+"邀请成功")
-
-                }else  if(data.data.inviteStatus == 0){
-                
-                    console.log(data.data.inviteStatus+"邀请失败")}
+                  
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
@@ -116,18 +122,15 @@ headers: {
     });
 }
 
-
-//提现100
-   function tx() {
+function task(userid,id) {
     return new Promise(async (resolve) => {
 
                 let options = {
-    url: `functionId=InviteFriendApiService&body={"method":"changeWxHongBao","data":{"order":3,"channel":1,"token":"","s":""}}&referer=-1&eid=eidIc2ff812158s1ARLLPvIBQjyII7trmiE3BQESzLTXqSC9s3TX28oQv3zQuaY%2B15FedjhWtgYfTsUSkl9FEDNBP8LQRrRx5GwEA93H4jSPYNJ1OvNs&aid=&client=ios&clientVersion=14.3&networkType=wifi&fp=-1&uuid=75aeceef3046d8ce11d354ff89af9517a2e4aa18&osVersion=14.3&d_brand=iPhone&d_model=iPhone9,2&agent=-1&pageClickKey=-1&screen=414*736&platform=3&lang=zh_CN&appid=market-task-h5&_t=1623066557140`,
+    url: `https://request.fenquar.com/mishi/shop.php?type=finish_task&user_id=${userid}&task_id=${id} `,
 
-    
 headers: {
-"Origin": "https://invite-reward.jd.com",
-"Host": "api.m.jd.com",
+"Origin": "https://h5.m.jd.com/",
+"Host": "request.fenquar.com",
       "User-Agent": "jdapp;iPhone;9.5.2;14.3;6898c30638c55142969304c8e2167997fa59eb53;network/wifi;ADID/F108E1B6-8E30-477C-BE54-87CF23435488;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone9,2;addressid/4585826605;supportBestPay/0;appBuild/167650;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1",
       "Cookie": cookie,
       }
@@ -136,20 +139,9 @@ headers: {
         $.get(options, async (err, resp, data) => {
             try {
 
-                    data = JSON.parse(data);
+                  $.dotask = JSON.parse(data);
 
-                   
-                    console.log(data.message)
-                    
-                    
-                    
-                    
-                    
-                    //return data.data;
-//allMessage += `京东账号${$.index}-${$.nickName || $.UserName}\n抽取京豆：${data.data.result.userAwardsCacheDto.jBeanAwardVo.prizeName}${$.index !== cookiesArr.length ? '\n\n' : '\n\n'}`;
-                    //}
-
-                //}
+                  
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
@@ -157,26 +149,35 @@ headers: {
             }
         });
     });
-}   
+}
+function tip(userid) {
+    return new Promise(async (resolve) => {
 
+                let options = {
+    url: `https://request.fenquar.com/mishi/shop.php?type=draw_prize_common&user_id=${userid}`,
 
+headers: {
+"Origin": "https://h5.m.jd.com/",
+"Host": "request.fenquar.com",
+      "User-Agent": "jdapp;iPhone;9.5.2;14.3;6898c30638c55142969304c8e2167997fa59eb53;network/wifi;ADID/F108E1B6-8E30-477C-BE54-87CF23435488;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone9,2;addressid/4585826605;supportBestPay/0;appBuild/167650;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1",
+      "Cookie": cookie,
+      }
+                }
+      
+        $.get(options, async (err, resp, data) => {
+            try {
 
+                  $.tiptask = JSON.parse(data);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                  
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve();
+            }
+        });
+    });
+}
 async function taskPostUrl(functionId,body) {
   return {
     url: `${JD_API_HOST}`,

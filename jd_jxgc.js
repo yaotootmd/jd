@@ -1,29 +1,25 @@
-
-/*
-
-
-
- #柠檬邀请有礼  
- #自定义邀请码环境变量
-export yqm="你的邀请码"
-#柠檬邀请有礼
-[task_local]
-0 10 * * * http://nm66.top/jd_yqyl.js, tag=柠檬邀请有礼, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
+/* 
+#自定义商品变量
+export shopid="1598"   ##你要商品ID 冰箱
+export shopid1="1607"  ##你要商品ID 茅台
+定时 58,59,0 18,19 * * *  可以自行设置
 */
-const $ = new Env('柠檬邀请有礼');
+const $ = new Env('柠檬惊喜工厂抢茅台');
 const notify = $.isNode() ? require('./sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [], cookie = '', message;
-let yqm = '';
-let zdtx = false //设置为true自动抢提现100
-if (process.env.yqm) {
-  yqm = process.env.yqm;
+shopid=""  // ##你要商品ID 茅台
+shopid1=""  //##你要商品ID 冰箱
+
+if (process.env.shopid) {
+  shopid = process.env.shopid;
 }
-if (process.env.zdtx) {
-  zdtx = process.env.zdtx;
+
+if (process.env.shopid1) {
+  shopid1 = process.env.shopid1;
 }
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -59,16 +55,10 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
         }
         continue
       }
-      
-      
-      await helpme()
-     if(zdtx == true){
-     for (let i = 0; i < 20; i++) {
-      await $.wait(1000)
-      await tx()
-     }
-     }
-      
+
+      await list()
+      await list1()
+     
 
     }
   }
@@ -79,56 +69,20 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
   .finally(() => {
     $.done();
   })
-function helpme() {
+
+function list() {
     return new Promise(async (resolve) => {
 
                 let options = {
-    url: `https://api.m.jd.com/?t=1623066557140`,
-//dS%2Bp85VyjydPuAOOnFP%2Faw%3D%3D
-    body: `functionId=InviteFriendChangeAssertsService&body={"method":"attendInviteActivity","data":{"inviterPin":"${yqm}","channel":1,"token":"","frontendInitStatus":""}}&referer=-1&eid=eidIc2ff812158s1ARLLPvIBQjyII7trmiE3BQESzLTXqSC9s3TX28oQv3zQuaY%2B15FedjhWtgYfTsUSkl9FEDNBP8LQRrRx5GwEA93H4jSPYNJ1OvNs&aid=&client=ios&clientVersion=14.3&networkType=wifi&fp=-1&uuid=75aeceef3046d8ce11d354ff89af9517a2e4aa18&osVersion=14.3&d_brand=iPhone&d_model=iPhone9,2&agent=-1&pageClickKey=-1&screen=414*736&platform=3&lang=zh_CN&appid=market-task-h5&_t=1623066557140`,
+    url: `https://m.jingxi.com//dreamfactory/userinfo/AddProduction?zone=dream_factory&factoryId=1099554520843&deviceId=1099554520844&commodityDimId=${shopid}&replaceProductionId=&_time=1623146403538&_stk=_time%2CcommodityDimId%2CdeviceId%2CfactoryId%2CreplaceProductionId%2Czone&_ste=1&h5st=20210608180003579%3B6987023816710162%3B10001%3Btk01wb98b1baea8nNmdTeHBoaEIyyVt8MwWYitL210lOXs66ovEkPI%2BwUC5jAypABgM%2F76EgUhE0cmmxqg6RQDK06%2FWV%3Be4127f4722141f14e44078fde821d9d5e68b71ca248715dfc44442443612dfcb&_=1623146403580&sceneval=2&g_login_type=1&callback=jsonpCBKQQQQ&g_ty=ls`,
+
+   // body: `functionId=HomeZeroBuy&body={"pageNum":1,"channel":"speed_app"}&appid=megatron&client=megatron&clientVersion=1.0.0`,
 headers: {
-"Origin": "https://618redpacket.jd.com",
-"Host": "api.m.jd.com",
-"User-Agent": "jdltapp;iPhone;3.3.6;14.3;75aeceef3046d8ce11d354ff89af9517a2e4aa18;network/wifi;hasUPPay/0;pushNoticeIsOpen/0;lang/zh_CN;model/iPhone9,2;addressid/4585826605;hasOCPay/0;appBuild/1060;supportBestPay/0;pv/53.31;apprpd/;ref/https://invite-reward.jd.com/?lng=106.286950&lat=29.969353&sid=547255867e847394aedfb6d68c3e50fw&un_area=4_48201_54794_0#/invitee?inviterId=dS%2Bp85VyjydPuAOOnFP%2Faw%3D%3D;psq/0;ads/;psn/75aeceef3046d8ce11d354ff89af9517a2e4aa18|89;jdv/0|kong|t_1001003207_1762319_6901310|jingfen|30578707801140d09fcd54e5cd83bbf7|1621510932517|1621511027;adk/;app_device/IOS;pap/JA2020_3112531|3.3.6|IOS 14.3;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1",
-      "Cookie": cookie,
-      }
-                }
-      
-        $.post(options, async (err, resp, data) => {
-            try {
+"X-Requested-With": "com.jd.pingou",
 
-                    data = JSON.parse(data);
-
-                    //console.log(data)
-                    
-                    if(data.data.inviteStatus == 1){
-                      console.log(data.data.inviteStatus+"邀请成功")
-
-                }else  if(data.data.inviteStatus == 0){
-                
-                    console.log(data.data.inviteStatus+"邀请失败")}
-            } catch (e) {
-                $.logErr(e, resp);
-            } finally {
-                resolve();
-            }
-        });
-    });
-}
-
-
-//提现100
-   function tx() {
-    return new Promise(async (resolve) => {
-
-                let options = {
-    url: `functionId=InviteFriendApiService&body={"method":"changeWxHongBao","data":{"order":3,"channel":1,"token":"","s":""}}&referer=-1&eid=eidIc2ff812158s1ARLLPvIBQjyII7trmiE3BQESzLTXqSC9s3TX28oQv3zQuaY%2B15FedjhWtgYfTsUSkl9FEDNBP8LQRrRx5GwEA93H4jSPYNJ1OvNs&aid=&client=ios&clientVersion=14.3&networkType=wifi&fp=-1&uuid=75aeceef3046d8ce11d354ff89af9517a2e4aa18&osVersion=14.3&d_brand=iPhone&d_model=iPhone9,2&agent=-1&pageClickKey=-1&screen=414*736&platform=3&lang=zh_CN&appid=market-task-h5&_t=1623066557140`,
-
-    
-headers: {
-"Origin": "https://invite-reward.jd.com",
-"Host": "api.m.jd.com",
-      "User-Agent": "jdapp;iPhone;9.5.2;14.3;6898c30638c55142969304c8e2167997fa59eb53;network/wifi;ADID/F108E1B6-8E30-477C-BE54-87CF23435488;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone9,2;addressid/4585826605;supportBestPay/0;appBuild/167650;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1",
+"Referer": "https://st.jingxi.com/pingou/dream_factory/index.html?sceneval=2&ptag=7155.9.46",
+"Host": "m.jingxi.com",
+      "User-Agent": "jdpingou;android;4.9.0;10;7049442d7e415232;network/UNKNOWN;model/PCAM00;appBuild/16879;partner/oppo01;;session/10;aid/7049442d7e415232;oaid/;pap/JA2019_3111789;brand/OPPO;eu/7303439343432346;fv/7356431353233323;Mozilla/5.0 (Linux; Android 10; PCAM00 Build/QKQ1.190918.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.92 Mobile Safari/537.36",
       "Cookie": cookie,
       }
                 }
@@ -136,18 +90,7 @@ headers: {
         $.get(options, async (err, resp, data) => {
             try {
 
-                    data = JSON.parse(data);
-
-                   
-                    console.log(data.message)
-                    
-                    
-                    
-                    
-                    
-                    //return data.data;
-//allMessage += `京东账号${$.index}-${$.nickName || $.UserName}\n抽取京豆：${data.data.result.userAwardsCacheDto.jBeanAwardVo.prizeName}${$.index !== cookiesArr.length ? '\n\n' : '\n\n'}`;
-                    //}
+$.log("冰箱："+data)
 
                 //}
             } catch (e) {
@@ -157,8 +100,39 @@ headers: {
             }
         });
     });
-}   
+}
 
+function list1() {
+    return new Promise(async (resolve) => {
+
+                let options = {
+    url: `https://m.jingxi.com//dreamfactory/userinfo/AddProduction?zone=dream_factory&factoryId=1099554520843&deviceId=1099554520844&commodityDimId=${shopid1}&replaceProductionId=&_time=1623146403538&_stk=_time%2CcommodityDimId%2CdeviceId%2CfactoryId%2CreplaceProductionId%2Czone&_ste=1&h5st=20210608180003579%3B6987023816710162%3B10001%3Btk01wb98b1baea8nNmdTeHBoaEIyyVt8MwWYitL210lOXs66ovEkPI%2BwUC5jAypABgM%2F76EgUhE0cmmxqg6RQDK06%2FWV%3Be4127f4722141f14e44078fde821d9d5e68b71ca248715dfc44442443612dfcb&_=1623146403580&sceneval=2&g_login_type=1&callback=jsonpCBKQQQQ&g_ty=ls`,
+
+   // body: `functionId=HomeZeroBuy&body={"pageNum":1,"channel":"speed_app"}&appid=megatron&client=megatron&clientVersion=1.0.0`,
+headers: {
+"X-Requested-With": "com.jd.pingou",
+
+"Referer": "https://st.jingxi.com/pingou/dream_factory/index.html?sceneval=2&ptag=7155.9.46",
+"Host": "m.jingxi.com",
+      "User-Agent": "jdpingou;android;4.9.0;10;7049442d7e415232;network/UNKNOWN;model/PCAM00;appBuild/16879;partner/oppo01;;session/10;aid/7049442d7e415232;oaid/;pap/JA2019_3111789;brand/OPPO;eu/7303439343432346;fv/7356431353233323;Mozilla/5.0 (Linux; Android 10; PCAM00 Build/QKQ1.190918.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.92 Mobile Safari/537.36",
+      "Cookie": cookie,
+      }
+                }
+      
+        $.get(options, async (err, resp, data) => {
+            try {
+
+$.log("茅台："+data)
+
+                //}
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve();
+            }
+        });
+    });
+}
 
 
 
